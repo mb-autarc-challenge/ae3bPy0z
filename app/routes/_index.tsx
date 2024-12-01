@@ -2,6 +2,9 @@ import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { useBroadcastChannel } from "~/hooks/useBroadcastChannel";
 import { usePersistence } from "~/hooks/usePersistence";
 import { Comment } from "~/utils";
+import CommentList from "~/components/CommentList";
+import CommentForm from "~/components/CommentForm";
+import ReplyingTo from "~/components/ReplyingTo";
 
 export default function Index() {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -95,35 +98,6 @@ export default function Index() {
     }
   };
 
-  const renderComments = (parentId: number | null) => {
-    return comments
-      .filter((comment) => comment.parentId === parentId)
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .map((comment) => (
-        <div
-          key={comment.id}
-          className="flex flex-col gap-2 p-4 border-b rounded-lg bg-white shadow-sm hover:shadow-md"
-        >
-          <div className="text-gray-800">{comment.text}</div>
-          <div className="flex justify-between">
-            <button
-              className="text-blue-500 hover:underline text-sm"
-              onClick={() => handleReply(comment)}
-            >
-              ↩ Reply
-            </button>
-            <button
-              className="text-red-500 hover:underline text-sm"
-              onClick={() => handleDeleteComment(comment.id)}
-            >
-              ✕ Delete
-            </button>
-          </div>
-          <div className="pl-4">{renderComments(comment.id)}</div>
-        </div>
-      ));
-  };
-
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setCommentInput(event.target.value);
   };
@@ -147,41 +121,22 @@ export default function Index() {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4">
-        <div className="flex flex-col gap-4">{renderComments(null)}</div>
+        <CommentList
+          comments={comments}
+          handleReply={handleReply}
+          handleDelete={handleDeleteComment}
+        />
         <div ref={commentsEndRef} />
       </div>
       <div className="flex flex-col">
-        {replyTo && (
-          <div className="mb-2 p-3 border-l-4 border-blue-400 rounded-lg bg-blue-50 flex justify-between items-center">
-            <div>
-              <strong className="text-blue-800">Replying to:</strong>
-              <p className="text-sm text-blue-600">{replyTo.text}</p>
-            </div>
-            <button
-              onClick={cancelReply}
-              className="text-red-500 hover:text-red-700"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-        <div className="flex items-center bg-gray-50 p-4 border-t border-gray-200 shadow-inner">
-          <textarea
-            ref={textareaRef}
-            value={commentInput}
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-            rows={3}
-            placeholder="Write your comment..."
-            className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleAddComment}
-            className="ml-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-          >
-            {replyTo ? "Reply" : "Add Comment"}
-          </button>
-        </div>
+        {replyTo && <ReplyingTo replyTo={replyTo} cancelReply={cancelReply} />}
+        <CommentForm
+          formRef={textareaRef}
+          commentInput={commentInput}
+          handleSubmit={handleAddComment}
+          onKeyDown={onKeyDown}
+          onChange={onChange}
+        />
       </div>
     </div>
   );
