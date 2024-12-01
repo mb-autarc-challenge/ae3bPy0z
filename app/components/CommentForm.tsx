@@ -8,13 +8,13 @@ interface CommentFormProps {
   onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const CommentForm = ({
+export default function CommentForm({
   commentInput,
   handleSubmit,
   onKeyDown,
   onChange,
   formRef,
-}: CommentFormProps) => {
+}: CommentFormProps) {
   return (
     <div className="flex items-center bg-gray-50 p-4 border-t border-gray-200 shadow-inner">
       <textarea
@@ -34,6 +34,4 @@ const CommentForm = ({
       </button>
     </div>
   );
-};
-
-export default CommentForm;
+}

@@ -1,5 +1,5 @@
 import CommentItem from "./CommentItem";
-import { Comment } from "~/utils";
+import { Comment } from "~/interfaces";
 
 interface CommentListProps {
   comments: Comment[];
@@ -7,11 +7,11 @@ interface CommentListProps {
   handleDelete: (id: number) => void;
 }
 
-const CommentList = ({
+export default function CommentList({
   comments,
   handleReply,
   handleDelete,
-}: CommentListProps) => {
+}: CommentListProps) {
   const renderComments = (parentId: number | null) => {
     return comments
       .filter((comment) => comment.parentId === parentId)
@@ -28,6 +28,4 @@ const CommentList = ({
   };
 
   return <div>{renderComments(null)}</div>;
-};
-
-export default CommentList;
+}

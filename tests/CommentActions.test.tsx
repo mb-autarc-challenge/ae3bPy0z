@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom";
 import CommentActions from "../app/components/CommentActions";
-import { Comment } from "~/utils";
+import { Comment } from "~/interfaces";
 
 describe("CommentActions", () => {
   const mockComment: Comment = {

@@ -1,5 +1,5 @@
 import CommentActions from "./CommentActions";
-import { Comment } from "~/utils";
+import { Comment } from "~/interfaces";
 
 interface CommentItemProps {
   comment: Comment;
@@ -8,12 +8,12 @@ interface CommentItemProps {
   renderReplies: () => React.ReactNode;
 }
 
-const CommentItem = ({
+export default function CommentItem({
   comment,
   onReply,
   onDelete,
   renderReplies,
-}: CommentItemProps) => {
+}: CommentItemProps) {
   return (
     <div className="flex flex-col gap-2 p-4 border-b rounded-lg bg-white shadow-sm hover:shadow-md">
       <div className="text-gray-800">{comment.text}</div>
@@ -21,6 +21,4 @@ const CommentItem = ({
       <div className="pl-4">{renderReplies()}</div>
     </div>
   );
-};
-
-export default CommentItem;
+}

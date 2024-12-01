@@ -1,4 +1,4 @@
-import { Comment } from "~/utils";
+import { Comment } from "~/interfaces";
 
 interface CommentActionsProps {
   comment: Comment;
@@ -6,11 +6,11 @@ interface CommentActionsProps {
   onDelete: (id: number) => void;
 }
 
-const CommentActions = ({
+export default function CommentActions({
   comment,
   onReply,
   onDelete,
-}: CommentActionsProps) => {
+}: CommentActionsProps) {
   return (
     <div className="flex justify-between">
       <button
@@ -27,6 +27,4 @@ const CommentActions = ({
       </button>
     </div>
   );
-};
-
-export default CommentActions;
+}

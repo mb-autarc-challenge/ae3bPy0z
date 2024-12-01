@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { useBroadcastChannel } from "~/hooks/useBroadcastChannel";
 import { usePersistence } from "~/hooks/usePersistence";
-import { Comment } from "~/utils";
+import { Comment } from "~/interfaces";
 import CommentList from "~/components/CommentList";
 import CommentForm from "~/components/CommentForm";
 import ReplyingTo from "~/components/ReplyingTo";

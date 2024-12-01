@@ -1,11 +1,11 @@
-import { Comment } from "~/utils";
+import { Comment } from "~/interfaces";
 
 interface ReplyingToProps {
   replyTo: Comment;
   cancelReply: () => void;
 }
 
-const ReplyingTo = ({ replyTo, cancelReply }: ReplyingToProps) => {
+export default function ReplyingTo({ replyTo, cancelReply }: ReplyingToProps) {
   return (
     <div className="mb-2 p-3 border-l-4 border-blue-400 rounded-lg bg-blue-50 flex justify-between items-center">
       <div>
@@ -17,6 +17,4 @@ const ReplyingTo = ({ replyTo, cancelReply }: ReplyingToProps) => {
       </button>
     </div>
   );
-};
-
-export default ReplyingTo;
+}
