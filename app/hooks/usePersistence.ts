@@ -24,11 +24,16 @@ export function usePersistence() {
     await db.put(STORE_NAME, comment);
   };
 
+  const deleteComment = async (id: number) => {
+    const db = await initDB();
+    await db.delete(STORE_NAME, id);
+  };
+
   const loadComments = async () => {
     const db = await initDB();
     // db.clear(STORE_NAME); // Uncomment to clear the comments
     return await db.getAll(STORE_NAME);
   };
 
-  return { saveComment, loadComments };
+  return { saveComment, deleteComment, loadComments };
 }

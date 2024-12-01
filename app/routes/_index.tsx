@@ -10,7 +10,7 @@ export default function Index() {
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { saveComment, loadComments } = usePersistence();
+  const { saveComment, loadComments, deleteComment } = usePersistence();
 
   const updateChannel = useBroadcastChannel(
     "autarc",
@@ -59,6 +59,15 @@ export default function Index() {
     }
   };
 
+  const handleDeleteComment = async (id: number) => {
+    const updatedComments = comments.filter((comment) => comment.id !== id);
+    setComments(updatedComments);
+    await deleteComment(id);
+    console.log("Deleting message:", id);
+
+    updateChannel(JSON.stringify({ id, action: "delete" }));
+  };
+
   const handleReply = (comment: Comment) => {
     if (comment) {
       setReplyTo(comment);
@@ -68,16 +77,20 @@ export default function Index() {
   };
 
   const handleIncommingMessage = (message: MessageEvent) => {
-    const newComment: Comment = JSON.parse(message.data);
+    const data = JSON.parse(message.data);
 
-    setComments((prevComments) => {
-      const updatedComments = [...prevComments, newComment];
-      return updatedComments;
-    });
+    if (data.action === "delete") {
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== data.id)
+      );
+    } else {
+      const newComment: Comment = data;
+      setComments((prevComments) => [...prevComments, newComment]);
+    }
 
     // Scroll to bottom only if not replying to a comment.
     // Bad UX if the user is reading a comment and a new one is added but good enough for this example.
-    if (newComment.parentId === null) {
+    if (data.parentId === null) {
       scrollToBottom();
     }
   };
@@ -89,15 +102,23 @@ export default function Index() {
       .map((comment) => (
         <div
           key={comment.id}
-          className="flex flex-col gap-2 p-4 border rounded-lg bg-white shadow-sm hover:shadow-md"
+          className="flex flex-col gap-2 p-4 border-b rounded-lg bg-white shadow-sm hover:shadow-md"
         >
           <div className="text-gray-800">{comment.text}</div>
-          <button
-            className="self-end text-blue-500 hover:underline text-sm"
-            onClick={() => handleReply(comment)}
-          >
-            ↩ Reply
-          </button>
+          <div className="flex justify-between">
+            <button
+              className="text-blue-500 hover:underline text-sm"
+              onClick={() => handleReply(comment)}
+            >
+              ↩ Reply
+            </button>
+            <button
+              className="text-red-500 hover:underline text-sm"
+              onClick={() => handleDeleteComment(comment.id)}
+            >
+              ✕ Delete
+            </button>
+          </div>
           <div className="pl-4">{renderComments(comment.id)}</div>
         </div>
       ));
