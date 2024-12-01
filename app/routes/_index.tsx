@@ -6,8 +6,7 @@ import { Comment } from "~/utils";
 export default function Index() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState("");
-  const [replyTo, setReplyTo] = useState<number | null>(null);
-  const [replyToText, setReplyToText] = useState<string | null>(null);
+  const [replyTo, setReplyTo] = useState<Comment | null>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -39,7 +38,7 @@ export default function Index() {
 
     const newComment: Comment = {
       id: Date.now(),
-      parentId: replyTo,
+      parentId: replyTo?.id ?? null,
       timestamp: Date.now(),
       text: commentInput,
     };
@@ -53,7 +52,6 @@ export default function Index() {
 
     setCommentInput("");
     setReplyTo(null);
-    setReplyToText(null);
 
     // Scroll to bottom only if not replying to a comment
     if (replyTo === null) {
@@ -61,11 +59,9 @@ export default function Index() {
     }
   };
 
-  const handleReply = (id: number) => {
-    const comment = comments.find((comment) => comment.id === id);
+  const handleReply = (comment: Comment) => {
     if (comment) {
-      setReplyTo(id);
-      setReplyToText(comment.text);
+      setReplyTo(comment);
       setCommentInput("");
       textareaRef.current?.focus();
     }
@@ -79,7 +75,8 @@ export default function Index() {
       return updatedComments;
     });
 
-    // Scroll to bottom only if not replying to a comment (bad UX for multiple incoming messages, but good enough for this example)
+    // Scroll to bottom only if not replying to a comment.
+    // Bad UX if the user is reading a comment and a new one is added but good enough for this example.
     if (newComment.parentId === null) {
       scrollToBottom();
     }
@@ -96,7 +93,7 @@ export default function Index() {
         >
           <div>{comment.text}</div>
           <button
-            onClick={() => handleReply(comment.id)}
+            onClick={() => handleReply(comment)}
             className="self-end text-blue-500"
           >
             ↩ Reply
@@ -115,6 +112,15 @@ export default function Index() {
       event.preventDefault();
       handleAddComment();
     }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      cancelReply();
+    }
+  };
+
+  const cancelReply = () => {
+    setReplyTo(null);
   };
 
   return (
@@ -124,10 +130,15 @@ export default function Index() {
         <div ref={commentsEndRef} />
       </div>
       <div className="flex flex-col p-4 border-t">
-        {replyToText && (
-          <div className="mb-2 p-2 border rounded bg-gray-100">
-            <strong>Replying to:</strong>
-            <p className="text-sm text-gray-700">{replyToText}</p>
+        {replyTo && (
+          <div className="mb-2 p-2 border rounded bg-gray-100 flex justify-between items-center">
+            <div>
+              <strong>Replying to:</strong>
+              <p className="text-sm text-gray-700">{replyTo.text}</p>
+            </div>
+            <button onClick={cancelReply} className="text-red-500">
+              ✕
+            </button>
           </div>
         )}
         <div className="flex items-center">
