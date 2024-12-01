@@ -1,34 +1,7 @@
 import { useState, useEffect, ChangeEvent, useRef } from "react";
-import { openDB } from "idb";
 import { useBroadcastChannel } from "~/hooks/useBroadcastChannel";
-
-interface Comment {
-  id: number;
-  parentId: number | null;
-  timestamp: number;
-  text: string;
-}
-
-const DB_NAME = "commentsDB";
-const STORE_NAME = "comments";
-
-const initDB = async () => {
-  return openDB(DB_NAME, 1, {
-    upgrade(db) {
-      db.createObjectStore(STORE_NAME, { keyPath: "id" });
-    },
-  });
-};
-
-const saveComment = async (comment: Comment) => {
-  const db = await initDB();
-  await db.put(STORE_NAME, comment);
-};
-
-const getComments = async () => {
-  const db = await initDB();
-  return await db.getAll(STORE_NAME);
-};
+import { usePersistence } from "~/hooks/usePersistence";
+import { Comment } from "~/utils";
 
 export default function Index() {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -37,6 +10,8 @@ export default function Index() {
   const [replyToText, setReplyToText] = useState<string | null>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { saveComment, loadComments } = usePersistence();
 
   const updateChannel = useBroadcastChannel(
     "autarc",
@@ -47,13 +22,13 @@ export default function Index() {
   );
 
   useEffect(() => {
-    const loadComments = async () => {
-      const storedComments = await getComments();
+    const fetchComments = async () => {
+      const storedComments = await loadComments();
       setComments(storedComments);
     };
 
-    loadComments();
-  }, []);
+    fetchComments();
+  }, [loadComments]);
 
   const scrollToBottom = () => {
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -163,5 +138,5 @@ export default function Index() {
 }
 
 function handleIncommingMessage(message: MessageEvent<any>): void {
-  // Implement incomming message
+  throw new Error("Function not implemented.");
 }
