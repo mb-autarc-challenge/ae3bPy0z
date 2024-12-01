@@ -1,40 +1,32 @@
-# Welcome to Remix!
+# Autarc coding challenge
 
-- 📖 [Remix docs](https://remix.run/docs)
+In this repo you'll find my submission.  
+This is a React application developed with the Remix framework.  
 
-## Development
-
-Run the dev server:
-
-```shellscript
+To start the application on the development mode, please run:  
+```
+npm install
 npm run dev
 ```
 
-## Deployment
+This will serve the application on `localhost:3000`.  
 
-First, build your app for production:
+Included you'll find a simple page where a list of comments is displayed, together with an input to create a new comment.  
 
-```sh
-npm run build
-```
+After adding a comment you can reply or delete it.  
+Child comments will be displayed below.  
 
-Then run the app in production mode:
+The application saves the information locallly with help of IndexedDB.  
+This is done with the use of a helper library called IDB.  
+The application also accepts comments from separate tabs. For this, it uses a `BroadcastChannel`.  
+The application includes a simple vitest setup for unit tests.
 
-```sh
-npm start
-```
+There are some tradeoffs related to the data structure and organization.  
+The main one is the decision to not keep an array of children for descendent comments, but instead to keep a simple pointer to the parent.  
+There are a number of improvements that can be done, such as:  
+- Adding E2E tests for the integration tests
+- Improving the styles
 
-Now you'll need to pick a host to deploy it to.
+I focused on the main functionality and setup, but I'm happy to discuss possible improvements or different ways of tackling the challenge with the team.  
 
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+Thanks!
