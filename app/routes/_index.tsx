@@ -71,6 +71,20 @@ export default function Index() {
     }
   };
 
+  const handleIncommingMessage = (message: MessageEvent) => {
+    const newComment: Comment = JSON.parse(message.data);
+
+    setComments((prevComments) => {
+      const updatedComments = [...prevComments, newComment];
+      return updatedComments;
+    });
+
+    // Scroll to bottom only if not replying to a comment (bad UX for multiple incoming messages, but good enough for this example)
+    if (newComment.parentId === null) {
+      scrollToBottom();
+    }
+  };
+
   const renderComments = (parentId: number | null) => {
     return comments
       .filter((comment) => comment.parentId === parentId)
@@ -135,8 +149,4 @@ export default function Index() {
       </div>
     </div>
   );
-}
-
-function handleIncommingMessage(message: MessageEvent<any>): void {
-  throw new Error("Function not implemented.");
 }
