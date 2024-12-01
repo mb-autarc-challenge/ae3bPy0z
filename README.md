@@ -24,7 +24,7 @@ The application includes a simple vitest setup for unit tests.
 There are some tradeoffs related to the data structure and organization.  
 The main one is the decision to not keep an array of children for descendent comments, but instead to keep a simple pointer to the parent.  
 There are a number of improvements that can be done, such as:  
-- Adding E2E tests for the integration tests
+- Adding E2E tests / integration tests
 - Improving the styles
 
 I focused on the main functionality and setup, but I'm happy to discuss possible improvements or different ways of tackling the challenge with the team.  
