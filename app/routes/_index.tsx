@@ -5,11 +5,14 @@ import { Comment } from "~/interfaces";
 import CommentList from "~/components/CommentList";
 import CommentForm from "~/components/CommentForm";
 import ReplyingTo from "~/components/ReplyingTo";
+import ConfirmationModal from "~/components/ConfirmationModal";
 
 export default function Index() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState("");
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -63,12 +66,22 @@ export default function Index() {
   };
 
   const handleDeleteComment = async (id: number) => {
-    const updatedComments = comments.filter((comment) => comment.id !== id);
-    setComments(updatedComments);
-    await deleteComment(id);
-    console.log("Deleting message:", id);
+    setCommentToDelete(id);
+    setShowModal(true);
+  };
 
-    updateChannel(JSON.stringify({ id, action: "delete" }));
+  const confirmDeleteComment = async () => {
+    if (commentToDelete !== null) {
+      const updatedComments = comments.filter(
+        (comment) => comment.id !== commentToDelete
+      );
+      setComments(updatedComments);
+      await deleteComment(commentToDelete);
+
+      updateChannel(JSON.stringify({ id: commentToDelete, action: "delete" }));
+    }
+    setShowModal(false);
+    setCommentToDelete(null);
   };
 
   const handleReply = (comment: Comment) => {
@@ -138,6 +151,13 @@ export default function Index() {
           onChange={onChange}
         />
       </div>
+      {showModal && (
+        <ConfirmationModal
+          message="Are you sure you want to delete this comment?"
+          onConfirm={confirmDeleteComment}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }
